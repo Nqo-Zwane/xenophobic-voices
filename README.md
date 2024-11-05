@@ -84,7 +84,7 @@ Contributions are welcome! If you'd like to contribute, follow these steps:
 
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/your-username/xenophobic-voices.git
+   git clone https://github.com/Nqo-Zwane/xenophobic-voices.git
    cd xenophobic-voices
 3. **Create a new feature branch**:
    ```bash
@@ -92,11 +92,12 @@ Contributions are welcome! If you'd like to contribute, follow these steps:
 
 4. **Commit your changes**:
    ```bash
-   git checkout -b feature/YourFeature
+   git add .
+   git commit -m "feat: add YourFeature description"
 
 5. **Push to the branch**:
    ```bash
-   git checkout -b feature/YourFeature
+   git push origin feature/YourFeature
 
 6. **Submit a Pull Request**:
    - Go to the original repository and click on **"New Pull Request"**.
