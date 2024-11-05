@@ -10,7 +10,8 @@
     "plugin:import/recommended",
     "plugin:promise/recommended",
     "plugin:sonarjs/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:html/recommended"
   ],
   "overrides": [],
   "parserOptions": {
