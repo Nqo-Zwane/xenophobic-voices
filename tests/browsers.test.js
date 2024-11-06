@@ -91,3 +91,16 @@ test('getFBO should return a WebGLRenderTarget instance', async ({ page }) => {
   expect(isFBOInstance).not.toBeNull();
   expect(isFBOInstance).toBe(true);
 });
+test('FBO texture should depth texture properties', async ({ page }) => {
+  const texturePropertiesValid = await page.evaluate(() => {
+    const target = window.three.FBO;
+    const depthTexture = target.depthTexture;
+
+    return (
+      depthTexture instanceof window.three.three.DepthTexture &&
+      depthTexture.format === window.three.three.DepthFormat
+    );
+  });
+
+  expect(texturePropertiesValid).toBe(true);
+});
