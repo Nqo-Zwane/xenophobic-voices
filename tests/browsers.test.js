@@ -15,6 +15,11 @@ test('Three.js scene should have a canvas element named "canvas"', async () => {
 });
 
 test('Three.js scene should load with correct objects', async ({ page }) => {
+  await page.waitForFunction(() => window.three && window.three.scene, {
+    timeout: 60_000,
+    polling: 'raf'
+  });
+
   const contextType = await page.evaluate(() => {
     const domCanvas = document.querySelector('canvas');
     if (!domCanvas) return;
