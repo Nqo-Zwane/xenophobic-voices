@@ -59,21 +59,40 @@ export default class Three {
     this.scene.add(this.ambientLight);
   }
 
-  setGeometry() {
-    this.planeGeometry = new T.PlaneGeometry(1, 1, 128, 128);
-    this.planeMaterial = new T.ShaderMaterial({
-      side: T.DoubleSide,
-      wireframe: true,
-      fragmentShader: fragment,
-      vertexShader: vertex,
-      uniforms: {
-        progress: { type: 'f', value: 0 }
-      }
-    });
+  setGeometry(
+    gridSize = 100,
+    planeHeight = 0.008,
+    planeWidth = 5,
+    divisions = 500
+  ) {
+    try {
+      this.planeMaterial = new T.ShaderMaterial({
+        side: T.DoubleSide,
+        wireframe: true,
+        fragmentShader: fragment,
+        vertexShader: vertex,
+        uniforms: {
+          progress: { type: 'f', value: 0 }
+        }
+      });
 
-    this.planeMesh = new T.Mesh(this.planeGeometry, this.planeMaterial);
-    this.scene.add(this.planeMesh);
+      // Loop for creating the grid of planes
+      for (let index = 0; index <= gridSize; index++) {
+        this.planeGeometry1 = new T.PlaneGeometry(
+          planeWidth,
+          planeHeight,
+          divisions,
+          1
+        );
+        this.planeMesh = new T.Mesh(this.planeGeometry1, this.planeMaterial);
+        this.planeMesh.position.y = (index - gridSize / 2) / (gridSize / 2); // Adjusting grid based on size
+        this.scene.add(this.planeMesh);
+      }
+    } catch (error) {
+      console.error('Error creating plane geometry:', error);
+    }
   }
+
   getFBO() {
     try {
       const target = new T.WebGLRenderTarget(device.width, device.height);
