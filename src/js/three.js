@@ -39,6 +39,8 @@ export default class Three {
 
     this.clock = new T.Clock();
 
+    this.FBOTarget = this.getFBO();
+
     this.setLights();
     this.setGeometry();
     this.render();
@@ -47,7 +49,8 @@ export default class Three {
       camera: this.camera,
       scene: this.scene,
       renderer: this.renderer,
-      three: T
+      three: T,
+      FBO: this.FBOTarget
     };
   }
 
@@ -70,6 +73,26 @@ export default class Three {
 
     this.planeMesh = new T.Mesh(this.planeGeometry, this.planeMaterial);
     this.scene.add(this.planeMesh);
+  }
+  getFBO() {
+    try {
+      const target = new T.WebGLRenderTarget(device.width, device.height);
+      target.texture.format = T.RGBAFormat;
+      target.texture.minFilter = T.NearestFilter;
+      target.texture.magFilter = T.NearestFilter;
+      target.stencilBuffer = false;
+      target.texture.generateMipmaps = false;
+      target.depthBuffer = true;
+
+      target.depthTexture = new T.DepthTexture();
+      target.depthTexture.format = T.DepthFormat;
+      target.depthTexture.type = T.UnsignedShortType;
+
+      return target;
+    } catch (error) {
+      console.error('Error creating FBO:', error);
+      return;
+    }
   }
 
   render() {

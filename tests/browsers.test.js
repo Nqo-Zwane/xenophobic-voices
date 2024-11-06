@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import * as T from 'three';
 
-beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:3000');
 });
 
@@ -79,4 +79,15 @@ test('Three.js scene should resize correctly', async ({ page }) => {
   expect(newHeight).toBe(600);
   expect(newWidth).not.toBe(initialWidth);
   expect(newHeight).not.toBe(initialHeight);
+});
+test('getFBO should return a WebGLRenderTarget instance', async ({ page }) => {
+  const isFBOInstance = await page.evaluate(() => {
+    const target = window.three.FBO;
+    return target instanceof window.three.three.WebGLRenderTarget
+      ? true
+      : false;
+  });
+
+  expect(isFBOInstance).not.toBeNull();
+  expect(isFBOInstance).toBe(true);
 });
