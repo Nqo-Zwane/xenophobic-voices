@@ -1,1 +1,4 @@
 npx --no -- commitlint --edit ${1}
+npx playwright test
+npm run lint
+npm run lint:fix
