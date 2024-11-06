@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test';
 import * as T from 'three';
 
+beforeEach(async ({ page }) => {
+  await page.goto('http://localhost:3000');
+});
+
 test('Three.js scene should have a canvas element named "canvas"', async ({
   page
 }) => {
-  await page.goto('http://localhost:3000');
-
   const canvas = await page.locator('canvas');
   await expect(canvas).toBeVisible();
   expect(await canvas.count()).toBeGreaterThan(0);
@@ -15,8 +17,6 @@ test('Three.js scene should have a canvas element named "canvas"', async ({
 });
 
 test('Three.js scene should load with correct objects', async ({ page }) => {
-  await page.goto('http://localhost:3000');
-
   const canvas = await page.locator('canvas');
   await expect(canvas).toBeVisible();
 
@@ -42,8 +42,6 @@ test('Three.js scene should load with correct objects', async ({ page }) => {
 });
 
 test('Three.js camera should have default position', async ({ page }) => {
-  await page.goto('http://localhost:3000');
-
   const cameraPosition = await page.evaluate(() => {
     const camera = window.three.camera;
     return camera.position;
@@ -55,8 +53,6 @@ test('Three.js camera should have default position', async ({ page }) => {
 });
 
 test('Three.js scene should resize correctly', async ({ page }) => {
-  await page.goto('http://localhost:3000');
-
   const initialWidth = await page
     .locator('canvas')
     .boundingBox()
