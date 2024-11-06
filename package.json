@@ -12,6 +12,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "test:watch": "nodemon --exec npx playwright test",
     "postinstall": "husky & playwright install",
     "clean:dist": "npx rimraf dist",
     "clean:report": "npx rimraf playwright-report",

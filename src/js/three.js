@@ -43,6 +43,12 @@ export default class Three {
     this.setGeometry();
     this.render();
     this.setResize();
+    window.three = {
+      camera: this.camera,
+      scene: this.scene,
+      renderer: this.renderer,
+      three: T
+    };
   }
 
   setLights() {
