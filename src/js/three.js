@@ -130,18 +130,22 @@ export default class Three {
   }
 
   render() {
-    this.stats.update();
-    const elapsedTime = this.clock.getElapsedTime();
+    try {
+      this.stats.update();
+      const elapsedTime = this.clock.getElapsedTime();
 
-    this.planeMesh.rotation.x = 0.2 * elapsedTime;
-    this.planeMesh.rotation.y = 0.1 * elapsedTime;
+      this.planeMesh.rotation.x = 0.2 * elapsedTime;
+      this.planeMesh.rotation.y = 0.1 * elapsedTime;
 
-    requestAnimationFrame(this.render.bind(this));
-    this.renderer.setRenderTarget(this.FBOTarget);
-    this.renderer.render(this.scene, this.depthCamera);
-    // eslint-disable-next-line unicorn/no-null
-    this.renderer.setRenderTarget(null);
-    this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.render.bind(this));
+      this.renderer.setRenderTarget(this.FBOTarget);
+      this.renderer.render(this.scene, this.depthCamera);
+      // eslint-disable-next-line unicorn/no-null
+      this.renderer.setRenderTarget(null);
+      this.renderer.render(this.scene, this.camera);
+    } catch (error) {
+      console.error('Error during render:', error);
+    }
   }
 
   setResize() {
