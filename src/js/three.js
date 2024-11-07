@@ -87,7 +87,12 @@ export default class Three {
         fragmentShader: fragment,
         vertexShader: vertex,
         uniforms: {
-          progress: { type: 'f', value: 0 }
+          time: { type: 'f', value: 0 },
+          progress: { type: 'f', value: 0 },
+          resolution: { value: new T.Vector4() },
+          depthInfo: { value: undefined },
+          cameraNear: { value: this.depthCamera.near },
+          cameraFar: { value: this.depthCamera.far }
         }
       });
 
@@ -140,6 +145,10 @@ export default class Three {
       requestAnimationFrame(this.render.bind(this));
       this.renderer.setRenderTarget(this.FBOTarget);
       this.renderer.render(this.scene, this.depthCamera);
+
+      this.planeMaterial.uniforms.time.value = elapsedTime;
+      this.planeMaterial.uniforms.depthInfo.value = this.target.depthTexture;
+
       // eslint-disable-next-line unicorn/no-null
       this.renderer.setRenderTarget(null);
       this.renderer.render(this.scene, this.camera);
