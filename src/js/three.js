@@ -1,3 +1,4 @@
+import Stats from 'stats.js';
 import * as T from 'three';
 // eslint-disable-next-line import/no-unresolved
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -41,6 +42,8 @@ export default class Three {
 
     this.FBOTarget = this.getFBO();
 
+    this.setStats();
+
     this.setLights();
     this.setGeometry();
     this.render();
@@ -54,6 +57,10 @@ export default class Three {
     };
   }
 
+  setStats() {
+    this.stats = new Stats();
+    document.body.append(this.stats.dom);
+  }
   setLights() {
     this.ambientLight = new T.AmbientLight(new T.Color(1, 1, 1, 1));
     this.scene.add(this.ambientLight);
@@ -85,7 +92,7 @@ export default class Three {
           1
         );
         this.planeMesh = new T.Mesh(this.planeGeometry1, this.planeMaterial);
-        this.planeMesh.position.y = (index - gridSize / 2) / (gridSize / 2); // Adjusting grid based on size
+        this.planeMesh.position.y = (index - gridSize / 2) / (gridSize / 2);
         this.scene.add(this.planeMesh);
       }
     } catch (error) {
@@ -115,6 +122,7 @@ export default class Three {
   }
 
   render() {
+    this.stats.update();
     const elapsedTime = this.clock.getElapsedTime();
 
     this.planeMesh.rotation.x = 0.2 * elapsedTime;
