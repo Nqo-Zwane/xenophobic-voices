@@ -83,7 +83,7 @@ export default class Three {
     try {
       this.planeMaterial = new T.ShaderMaterial({
         side: T.DoubleSide,
-        wireframe: true,
+        wireframe: false,
         fragmentShader: fragment,
         vertexShader: vertex,
         uniforms: {
@@ -139,15 +139,12 @@ export default class Three {
       this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
 
-      this.planeMesh.rotation.x = 0.2 * elapsedTime;
-      this.planeMesh.rotation.y = 0.1 * elapsedTime;
-
       requestAnimationFrame(this.render.bind(this));
       this.renderer.setRenderTarget(this.FBOTarget);
       this.renderer.render(this.scene, this.depthCamera);
 
       this.planeMaterial.uniforms.time.value = elapsedTime;
-      this.planeMaterial.uniforms.depthInfo.value = this.target.depthTexture;
+      this.planeMaterial.uniforms.depthInfo.value = this.FBOTarget.depthTexture;
 
       // eslint-disable-next-line unicorn/no-null
       this.renderer.setRenderTarget(null);
