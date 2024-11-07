@@ -63,7 +63,7 @@ export default class Three {
     gridSize = 100,
     planeHeight = 0.008,
     planeWidth = 5,
-    divisions = 500
+    divisions = 50
   ) {
     try {
       this.planeMaterial = new T.ShaderMaterial({
