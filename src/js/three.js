@@ -104,6 +104,17 @@ export default class Three {
           divisions,
           1
         );
+        let y = [];
+
+        let length_ = this.planeGeometry1.attributes.position.array.length;
+
+        for (let index_ = 0; index_ < length_ / 3; index_++) {
+          y.push(index / 100);
+        }
+        this.planeGeometry1.setAttribute(
+          'y',
+          new T.Float32BufferAttribute(y, 1)
+        );
         this.planeMesh = new T.Mesh(this.planeGeometry1, this.planeMaterial);
         this.planeMesh.position.y = (index - gridSize / 2) / (gridSize / 2);
         this.scene.add(this.planeMesh);
