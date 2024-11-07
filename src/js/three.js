@@ -136,8 +136,12 @@ export default class Three {
     this.planeMesh.rotation.x = 0.2 * elapsedTime;
     this.planeMesh.rotation.y = 0.1 * elapsedTime;
 
-    this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render.bind(this));
+    this.renderer.setRenderTarget(this.FBOTarget);
+    this.renderer.render(this.scene, this.depthCamera);
+    // eslint-disable-next-line unicorn/no-null
+    this.renderer.setRenderTarget(null);
+    this.renderer.render(this.scene, this.camera);
   }
 
   setResize() {
