@@ -24,7 +24,14 @@ export default class Three {
       0.1,
       100
     );
+    this.depthCamera = new T.PerspectiveCamera(
+      70,
+      device.width / device.height,
+      1,
+      2
+    );
     this.camera.position.set(0, 0, 2);
+    this.depthCamera.position.set(0, 0, 1);
     this.scene.add(this.camera);
 
     this.renderer = new T.WebGLRenderer({
@@ -49,6 +56,7 @@ export default class Three {
     this.render();
     this.setResize();
     window.three = {
+      depthCamera: this.depthCamera,
       camera: this.camera,
       scene: this.scene,
       renderer: this.renderer,

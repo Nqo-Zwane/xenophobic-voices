@@ -42,15 +42,23 @@ test('Three.js scene should load with correct objects', async ({ page }) => {
   expect(meshExists).toBe(true);
 });
 
-test('Three.js camera should have default position', async ({ page }) => {
-  const cameraPosition = await page.evaluate(() => {
+test('Three.js cameras should have default positions', async ({ page }) => {
+  const cameraPositions = await page.evaluate(() => {
     const camera = window.three.camera;
-    return camera.position;
+    const depthCamera = window.three.depthCamera;
+    return {
+      cameraPosition: camera.position,
+      depthCameraPosition: depthCamera.position
+    };
   });
 
-  expect(cameraPosition.x).toBeCloseTo(0);
-  expect(cameraPosition.y).toBeCloseTo(0);
-  expect(cameraPosition.z).toBeCloseTo(2);
+  expect(cameraPositions.cameraPosition.x).toBeCloseTo(0);
+  expect(cameraPositions.cameraPosition.y).toBeCloseTo(0);
+  expect(cameraPositions.cameraPosition.z).toBeCloseTo(2);
+
+  expect(cameraPositions.depthCameraPosition.x).toBeCloseTo(0);
+  expect(cameraPositions.depthCameraPosition.y).toBeCloseTo(0);
+  expect(cameraPositions.depthCameraPosition.z).toBeCloseTo(1);
 });
 
 test('Three.js scene should resize correctly', async ({ page }) => {
