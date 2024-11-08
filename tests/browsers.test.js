@@ -101,3 +101,12 @@ test('FBO texture should depth texture properties', async ({ page }) => {
 
   expect(texturePropertiesValid).toBe(true);
 });
+test('should load model within acceptable time limit', async ({ page }) => {
+  const loadTime = await page.evaluate(async () => {
+    const start = performance.now();
+    await window.three.setModel;
+    const end = performance.now();
+    return end - start;
+  });
+  expect(loadTime).toBeLessThan(300);
+});
