@@ -70,7 +70,9 @@ export default class Three {
       scene: this.scene,
       renderer: this.renderer,
       three: T,
-      FBO: this.FBOTarget
+      FBO: this.FBOTarget,
+      stats: this.stats,
+      setModel: this.setModel.bind(this)
     };
   }
 
