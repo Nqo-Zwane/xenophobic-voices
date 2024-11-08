@@ -2,6 +2,7 @@ import Stats from 'stats.js';
 import * as T from 'three';
 // eslint-disable-next-line import/no-unresolved
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import fragment from '../shaders/fragment.glsl';
 import vertex from '../shaders/vertex.glsl';
@@ -11,6 +12,12 @@ const device = {
   height: window.innerHeight,
   pixelRatio: window.devicePixelRatio
 };
+
+const MODEL_PATH = '../src/assets/model/hi.gltf';
+const MODEL_SCALE = 50;
+const MODEL_POSITION = { x: -45, y: -100, z: -180 };
+const MODEL_ROTATION = { x: 0, y: 0, z: 0 };
+const MODEL_COLOR_IF_NO_MATERIAL = 0x00_00_00;
 
 export default class Three {
   constructor(canvas) {
@@ -51,6 +58,8 @@ export default class Three {
 
     this.setStats();
 
+    this.setModel();
+
     this.setLights();
     this.setGeometry();
     this.render();
@@ -72,6 +81,37 @@ export default class Three {
   setLights() {
     this.ambientLight = new T.AmbientLight(new T.Color(1, 1, 1, 1));
     this.scene.add(this.ambientLight);
+  }
+  async setModel(
+    scale = MODEL_SCALE,
+    position = MODEL_POSITION,
+    rotation = MODEL_ROTATION
+  ) {
+    this.loader = new GLTFLoader();
+
+    try {
+      const gltf = await new Promise((resolve, reject) => {
+        this.loader.load(MODEL_PATH, resolve, undefined, reject);
+      });
+
+      this.model = gltf.scene;
+
+      this.model.traverse((node) => {
+        if (node.isMesh && !(node.material instanceof T.MeshBasicMaterial)) {
+          node.material = new T.MeshBasicMaterial({
+            color: MODEL_COLOR_IF_NO_MATERIAL
+          });
+        }
+      });
+
+      this.model.scale.set(scale, scale, scale);
+      this.model.position.set(position.x, position.y, position.z);
+      this.model.rotation.set(rotation.x, rotation.y, rotation.z);
+
+      this.scene.add(this.model);
+    } catch (error) {
+      console.error('Error loading GLTF model:', error);
+    }
   }
 
   setGeometry(
@@ -149,6 +189,9 @@ export default class Three {
     try {
       this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
+      if (this.model) {
+        this.model.position.z = -180 + 4 * Math.sin(elapsedTime);
+      }
 
       requestAnimationFrame(this.render.bind(this));
       this.renderer.setRenderTarget(this.FBOTarget);
