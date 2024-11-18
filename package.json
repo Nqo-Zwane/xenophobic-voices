@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-legacy": "^5.4.2",
+    "dat.gui": "^0.7.9",
     "stats.js": "^0.17.0",
     "three": "^0.168.0"
   },
