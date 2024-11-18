@@ -1,8 +1,9 @@
 import Stats from 'stats.js';
 import * as T from 'three';
-// eslint-disable-next-line import/no-unresolved
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
 
 import fragment from '../shaders/fragment.glsl';
 import vertex from '../shaders/vertex.glsl';
@@ -13,10 +14,10 @@ const device = {
   pixelRatio: window.devicePixelRatio
 };
 
-const MODEL_PATH = '../src/assets/model/hi.gltf';
-const MODEL_SCALE = 50;
-const MODEL_POSITION = { x: -45, y: -100, z: -180 };
-const MODEL_ROTATION = { x: 0, y: 0, z: 0 };
+const MODEL_PATH = '../src/assets/model/headFin.glb';
+const MODEL_SCALE = 0.04;
+const MODEL_POSITION = { x: 0, y: 0, z: 0 };
+const MODEL_ROTATION = { x: 0, y: -1.5, z: 0 };
 const MODEL_COLOR_IF_NO_MATERIAL = 0x00_00_00;
 
 export default class Three {
@@ -28,7 +29,7 @@ export default class Three {
     this.camera = new T.PerspectiveCamera(
       75,
       device.width / device.height,
-      0.1,
+      0.05,
       100
     );
     this.depthCamera = new T.PerspectiveCamera(
@@ -37,7 +38,7 @@ export default class Three {
       1,
       2
     );
-    this.camera.position.set(0, 0, 2);
+    this.camera.position.set(0, 0, 1);
     this.depthCamera.position.set(0, 0, 1);
     this.scene.add(this.camera);
 
@@ -49,6 +50,7 @@ export default class Three {
     });
     this.renderer.setSize(device.width, device.height);
     this.renderer.setPixelRatio(Math.min(device.pixelRatio, 2));
+    this.renderer.toneMapping = T.ACESFilmicToneMapping;
 
     this.controls = new OrbitControls(this.camera, this.canvas);
 
@@ -90,13 +92,19 @@ export default class Three {
     rotation = MODEL_ROTATION
   ) {
     this.loader = new GLTFLoader();
+    this.ktx2Loader = await new KTX2Loader()
+      .setTranscoderPath('jsm/libs/basis/')
+      .detectSupport(this.renderer);
 
     try {
       const gltf = await new Promise((resolve, reject) => {
+        this.loader.setKTX2Loader(this.ktx2Loader);
+        this.loader.setMeshoptDecoder(MeshoptDecoder);
+
         this.loader.load(MODEL_PATH, resolve, undefined, reject);
       });
 
-      this.model = gltf.scene;
+      this.model = gltf.scene.children[0];
 
       this.model.traverse((node) => {
         if (node.isMesh && !(node.material instanceof T.MeshBasicMaterial)) {
@@ -105,7 +113,6 @@ export default class Three {
           });
         }
       });
-
       this.model.scale.set(scale, scale, scale);
       this.model.position.set(position.x, position.y, position.z);
       this.model.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -192,7 +199,7 @@ export default class Three {
       this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
       if (this.model) {
-        this.model.position.z = -180 + 4 * Math.sin(elapsedTime);
+        this.model.position.z = -1.4 + 0.5 * Math.sin(elapsedTime);
       }
 
       requestAnimationFrame(this.render.bind(this));
