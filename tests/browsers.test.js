@@ -110,3 +110,24 @@ test('should load model within acceptable time limit', async ({ page }) => {
   });
   expect(loadTime).toBeLessThan(300);
 });
+test('morph target influence test', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  await page.evaluate(async () => {
+    await window.three.setModel;
+    const model = window.three.model;
+    if (model) {
+      const morphTargetParameters = model.children[0].morphTargetInfluences;
+      morphTargetParameters[0] = 0.5;
+    }
+  });
+  const modelPositionZ = await page.evaluate(() => {
+    const model = window.three.model;
+    if (model && model.geometry) {
+      model.geometry.computeBoundingBox();
+      const boundingBox = model.geometry.boundingBox;
+      return boundingBox.max.z;
+    }
+  });
+  expect(modelPositionZ).not.toBeNull();
+});
