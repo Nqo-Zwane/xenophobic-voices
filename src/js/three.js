@@ -1,3 +1,4 @@
+import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import * as T from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -74,14 +75,33 @@ export default class Three {
       three: T,
       FBO: this.FBOTarget,
       stats: this.stats,
-      setModel: this.setModel.bind(this)
+      setModel: this.setModel.bind(this),
+      model: this.model
     };
+    this.morphTargetParams = {};
+    this.gui = new dat.GUI();
+    this.addGUI = this.addGUI.bind(this);
   }
 
   setStats() {
     this.stats = new Stats();
     document.body.append(this.stats.dom);
   }
+  addGUI(mesh) {
+    try {
+      for (const targetName of Object.keys(mesh.morphTargetDictionary)) {
+        this.gui
+          .add(this.morphTargetParams, targetName, 0, 1, 0.01)
+          .onChange((value) => {
+            const index = mesh.morphTargetDictionary[targetName];
+            mesh.morphTargetInfluences[index] = value;
+          });
+      }
+    } catch (error) {
+      console.error('Error adding GUI:', error);
+    }
+  }
+
   setLights() {
     this.ambientLight = new T.AmbientLight(new T.Color(1, 1, 1, 1));
     this.scene.add(this.ambientLight);
@@ -111,6 +131,12 @@ export default class Three {
           node.material = new T.MeshBasicMaterial({
             color: MODEL_COLOR_IF_NO_MATERIAL
           });
+        }
+        if (node.morphTargetDictionary && node.morphTargetInfluences) {
+          for (const targetName of Object.keys(node.morphTargetDictionary)) {
+            this.morphTargetParams[targetName] = 0;
+          }
+          this.addGUI(node);
         }
       });
       this.model.scale.set(scale, scale, scale);
