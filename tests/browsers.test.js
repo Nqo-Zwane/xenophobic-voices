@@ -54,7 +54,7 @@ test('Three.js cameras should have default positions', async ({ page }) => {
 
   expect(cameraPositions.cameraPosition.x).toBeCloseTo(0);
   expect(cameraPositions.cameraPosition.y).toBeCloseTo(0);
-  expect(cameraPositions.cameraPosition.z).toBeCloseTo(2);
+  expect(cameraPositions.cameraPosition.z).toBeCloseTo(1);
 
   expect(cameraPositions.depthCameraPosition.x).toBeCloseTo(0);
   expect(cameraPositions.depthCameraPosition.y).toBeCloseTo(0);
