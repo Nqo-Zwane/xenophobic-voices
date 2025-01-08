@@ -6,8 +6,8 @@
   /*
 		https://tailwindcss.com/docs/customizing-colors
 	*/
-  --primary: #262626; /* neutral-800 */
-  --secondary: #000000; /* neutral-900 */
+  --primary: #000000; /* neutral-800 */
+  --secondary: #ffffff; /* neutral-900 */
   --tertiary: #404040; /* neutral-700 */
   --color: #f3f3f3;
   --accent-primary: #2563eb; /* blue-600 */
