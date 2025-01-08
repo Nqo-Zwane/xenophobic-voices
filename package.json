@@ -38,7 +38,7 @@
     "@builder.io/partytown": "^0.10.2",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
-    "@playwright/test": "^1.47.2",
+    "@playwright/test": "^1.49.1",
     "autoprefixer": "^10.4.20",
     "babel-jest": "^29.7.0",
     "cssnano": "^7.0.6",
