@@ -6,18 +6,32 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
 
+import lipSync from '../assets/audio/output.json';
 import fragment from '../shaders/fragment.glsl';
 import vertex from '../shaders/vertex.glsl';
 
+const mouthShapeToViseme = {
+  A: 'aPose',
+  B: 'iPose',
+  C: 'oPose',
+  D: 'uPose',
+  E: 'ePose',
+  F: 'smile',
+  G: 'squiff',
+  H: 'tiltF',
+  X: 'aPose' // Idle or closed mouth
+};
+const audio = new Audio('src/assets/audio/output.wav');
+audio.preload = 'auto';
 const device = {
   width: window.innerWidth,
   height: window.innerHeight,
   pixelRatio: window.devicePixelRatio
 };
 
-const MODEL_PATH = '../src/assets/model/headFin.glb';
-const MODEL_SCALE = 0.04;
-const MODEL_POSITION = { x: 0, y: 0, z: 0 };
+const MODEL_PATH = '../src/assets/model/headFin_compressed.glb';
+const MODEL_SCALE = 1.8;
+const MODEL_POSITION = { x: 0, y: 0.5, z: -1.3 };
 const MODEL_ROTATION = { x: 0, y: -1.5, z: 0 };
 const MODEL_COLOR_IF_NO_MATERIAL = 0x00_00_00;
 
@@ -97,6 +111,9 @@ export default class Three {
             mesh.morphTargetInfluences[index] = value;
           });
       }
+      this.gui
+        .add({ playAudio: () => audio.play() }, 'playAudio')
+        .name('Play Audio');
     } catch (error) {
       console.error('Error adding GUI:', error);
     }
@@ -132,7 +149,11 @@ export default class Three {
             color: MODEL_COLOR_IF_NO_MATERIAL
           });
         }
-        if (node.morphTargetDictionary && node.morphTargetInfluences) {
+        if (
+          node.morphTargetDictionary &&
+          node.morphTargetInfluences &&
+          node.name === 'polySurface1Shape'
+        ) {
           for (const targetName of Object.keys(node.morphTargetDictionary)) {
             this.morphTargetParams[targetName] = 0;
           }
@@ -148,7 +169,6 @@ export default class Three {
       console.error('Error loading GLTF model:', error);
     }
   }
-
   setGeometry(
     gridSize = 100,
     planeHeight = 0.008,
@@ -198,6 +218,43 @@ export default class Three {
       console.error('Error creating plane geometry:', error);
     }
   }
+  driveMorphTargets() {
+    const currentAudioTime = audio.currentTime;
+    for (let index = 0; index < lipSync.mouthCues.length; index++) {
+      if (this.model) {
+        this.model.traverse((node) => {
+          if (
+            node.morphTargetDictionary &&
+            node.morphTargetInfluences &&
+            node.name === 'polySurface1Shape'
+          ) {
+            const mouthCue = lipSync.mouthCues[index];
+            const viseme = mouthShapeToViseme[mouthCue.value];
+            if (
+              currentAudioTime >= mouthCue.start &&
+              currentAudioTime <= mouthCue.end
+            ) {
+              const visemeIndex = node.morphTargetDictionary[viseme];
+              const currentInfluence = node.morphTargetInfluences[visemeIndex];
+              node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
+                currentInfluence,
+                1,
+                1
+              );
+            } else {
+              const visemeIndex = node.morphTargetDictionary[viseme];
+              const currentInfluence = node.morphTargetInfluences[visemeIndex];
+              node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
+                currentInfluence,
+                0,
+                0.1
+              );
+            }
+          }
+        });
+      }
+    }
+  }
 
   getFBO() {
     try {
@@ -224,9 +281,10 @@ export default class Three {
     try {
       this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
-      if (this.model) {
-        this.model.position.z = -1.4 + 0.5 * Math.sin(elapsedTime);
-      }
+      // if (this.model) {
+      //   this.model.position.z = -1.4 + 0.5 * Math.sin(elapsedTime);
+      // }
+      this.driveMorphTargets();
 
       requestAnimationFrame(this.render.bind(this));
       this.renderer.setRenderTarget(this.FBOTarget);
