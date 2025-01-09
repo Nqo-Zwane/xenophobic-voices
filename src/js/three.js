@@ -1,7 +1,6 @@
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import * as T from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
@@ -18,7 +17,7 @@ const mouthShapeToViseme = {
   F: 'smile',
   G: 'squiff',
   H: 'tiltF',
-  X: 'aPose' // Idle or closed mouth
+  X: 'aPose'
 };
 
 const device = {
@@ -65,8 +64,6 @@ export default class Three {
     this.renderer.setPixelRatio(Math.min(device.pixelRatio, 2));
     this.renderer.toneMapping = T.ACESFilmicToneMapping;
 
-    this.controls = new OrbitControls(this.camera, this.canvas);
-
     this.clock = new T.Clock();
 
     this.FBOTarget = this.getFBO();
@@ -90,7 +87,7 @@ export default class Three {
       setModel: this.setModel.bind(this),
       model: this.model
     };
-    this.gui = new dat.GUI();
+    //this.gui = new dat.GUI();
     this.audios = this.loadAudios(20);
     this.lipSyncData = this.loadLipSyncData();
     this.morphTargetParams = {};

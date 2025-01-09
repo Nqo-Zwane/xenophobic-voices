@@ -10,43 +10,81 @@
     <title>Heal Afrika</title>
     <meta name="title" content="Heal Afrika" />
     <meta name="application-name" content="Heal Afrika" />
-    <meta
-      name="description"
-      content="Heal Afrika"
-    />
+    <meta name="description" content="Heal Afrika" />
     <meta
       name="keywords"
-      content="
-        three, three js, threejs, three.js, three-js, 
-        three template, three js template, threejs template, three.js template, three-js template, 
-        three vite, three js vite, threejs vite, three.js vite, three-js vite,
-        three vite template, three js vite templante, threejs vite templante, three.js vite templante, three-js vite templante,
-        webgl, 3D, GLSL, GLSL shaders, shaders, web3D,
-        javascript, js, vanilla-javascript, vanilla-js, 
-        development, template, boilerplate, template-boilerplate, boilerplate-frontend, starter-kit,
-        vite, vite template, swc, husky, eslint, commitlint, prettier,
-        postcss, tailwind, tailwindcss, sass, scss, css, 
-        github, web app, web-app, webapp, spa
-      "
+      content="three, webgl, 3D, GLSL, shaders, JavaScript, development, template"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon/logo.png" />
-
-    <meta
-      name="google-site-verification"
-      content="43hCqye5FYTS4SnBMPKNFP-wBhfLHwRBykWJF1WJawo"
-    />
-
+    <link rel="stylesheet" href="./src/css/global.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.0/gsap.min.js"></script>
   </head>
   <body>
     <noscript class="text-center text-lg text-red-500">
       Enable JavaScript to enjoy all the features of this app.
     </noscript>
-    
-    <main class="flex h-full bg-primary text-primary">
+
+    <img id="logo" src="/favicon/logo.png" alt="Heal Afrika Logo" />
+    <img id="xenophobia-image" src="/favicon/xenophobia__1_-removebg-preview.png" alt="Xenophobia" />
+
+    <div id="loader">
+      <span></span>
+    </div>
+
+    <div class="cursor">
+      <span class="cursor-text">Hold to Keep Listening</span>
+    </div>
+
+
+    <div id="warning-overlay" class="flex flex-col items-center">
+      <h2>Warning: Content May Contain Offensive Material</h2>
+      <p>This website contains content that includes hate speech regarding social issues in South Africa.</p>
+      <button id="accept-button">Next</button>
+    </div>
+
+    <div
+      id="intro-overlay"
+      class="fixed inset-0 z-10 flex items-center justify-center bg-primary text-color"
+    >
+      <div class="text-center px-6">
+        <h1 class="text-4xl font-bold uppercase mb-4">Xenophobic Voices</h1>
+        <p class="text-lg mb-6">
+          Experience the Negative sentiments on social media towards foreigners in South Africa.
+        </p>
+        <button
+          id="enter-button"
+          class="px-6 py-3 bg-accent-primary text-white text-lg uppercase font-semibold rounded-lg hover:bg-accent-primary-state"
+        >
+          Enter Experience
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex h-full bg-secondary text-primary">
       <canvas id="canvas" class="z-[0] h-full w-full"></canvas>
     </main>
 
+    <!-- Audio Element -->
+    <!-- <audio id="intro-audio" src="src/assets/audio/Nyamezela (feat. Smanga & Gift Tonic).mp3"></audio> -->
+
+    <!-- Scripts -->
     <script type="module" src="src/js/index.js"></script>
+    <script>
+      window.addEventListener("load", () => {
+        const loader = document.getElementById("loader");
+        const introOverlay = document.getElementById("intro-overlay");
+        const introAudio = document.getElementById("intro-audio");
+
+        loader.classList.add("hidden");
+        setTimeout(() => {
+          introOverlay.classList.add("show");
+        }, 1000); 
+      });
+    </script>
   </body>
 </html>
+
+
+
 

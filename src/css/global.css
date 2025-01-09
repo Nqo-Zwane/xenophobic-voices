@@ -4,46 +4,170 @@
 
 :root {
   /*
-		https://tailwindcss.com/docs/customizing-colors
-	*/
-  --primary: #000000; /* neutral-800 */
-  --secondary: #ffffff; /* neutral-900 */
-  --tertiary: #404040; /* neutral-700 */
-  --color: #f3f3f3;
-  --accent-primary: #2563eb; /* blue-600 */
-  --accent-primary-state: #1d4ed8; /* blue-700 */
+    Updated color scheme
+  */
+  --primary: #0b0d23; /* New primary color */
+  --secondary: #000000; /* Neutral-900 remains unchanged */
+  --tertiary: #404040; /* Neutral-700 remains unchanged */
+  --color: #f3f3f3; /* Text color */
+  --accent: #4caf50; /* New accent color */
+  --accent-dark: #388e3c; /* Darker shade of accent color */
 }
+
 
 html,
 body {
   width: 100%;
   height: 100%;
 }
-
-.github-corner:hover .octo-arm {
-  animation: octocat-wave 560ms ease-in-out;
+#warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  visibility: hidden;
+}
+#loader {
+  position: fixed;
+  inset: 0;
+  background-color: #0b0d23; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50; 
 }
 
-@keyframes octocat-wave {
-  0%,
-  100% {
-    transform: rotate(0);
-  }
-  20%,
-  60% {
-    transform: rotate(-25deg);
-  }
-  40%,
-  80% {
-    transform: rotate(10deg);
+#loader span {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #fff; 
+  border-top-color: transparent; 
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@media (max-width: 500px) {
-  .github-corner:hover .octo-arm {
-    animation: none;
-  }
-  .github-corner .octo-arm {
-    animation: octocat-wave 560ms ease-in-out;
-  }
+.hidden {
+  display: none !important;
 }
+
+#warning-overlay.visible {
+  visibility: visible;
+}
+
+#warning-overlay h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+#warning-overlay p {
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+#accept-button {
+  padding: 10px 20px;
+  background-color: #0b0d23;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#accept-button:hover {
+  background-color: #0b0d23;
+}
+#intro-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+}
+
+#intro-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+#enter-button:hover { 
+  color: #8fbcfc; 
+}
+#logo {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  width: 50px; 
+  height: auto;
+  z-index: 100; 
+  transition: transform 0.3s ease;
+}
+
+#logo:hover {
+  transform: scale(1.1); 
+}
+#xenophobia-image {
+  position: fixed;
+  top: 0.02px;
+  left: 0.02px;
+  width: 200px; 
+  height: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+#xenophobia-image:hover {
+  transform: scale(1.1); 
+}
+/* global.css */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.cursor.active {
+  background-color: var(--accent);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.cursor.hide {
+  opacity: 0;
+}
+
+.cursor-text {
+  display: none;
+}
+
+.cursor.active .cursor-text {
+  display: block;
+}
+
+
