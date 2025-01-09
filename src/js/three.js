@@ -6,7 +6,6 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader';
 
-import lipSync from '../assets/audio/output.json';
 import fragment from '../shaders/fragment.glsl';
 import vertex from '../shaders/vertex.glsl';
 
@@ -21,8 +20,7 @@ const mouthShapeToViseme = {
   H: 'tiltF',
   X: 'aPose' // Idle or closed mouth
 };
-const audio = new Audio('src/assets/audio/output.wav');
-audio.preload = 'auto';
+
 const device = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -30,9 +28,9 @@ const device = {
 };
 
 const MODEL_PATH = '../src/assets/model/headFin_compressed.glb';
-const MODEL_SCALE = 1.8;
-const MODEL_POSITION = { x: 0, y: 0.5, z: -1.3 };
-const MODEL_ROTATION = { x: 0, y: -1.5, z: 0 };
+const MODEL_SCALE = 1.6;
+const MODEL_POSITION = { x: 0, y: 0.5, z: -1.9 };
+const MODEL_ROTATION = { x: -0.1, y: -1.5, z: 0 };
 const MODEL_COLOR_IF_NO_MATERIAL = 0x00_00_00;
 
 export default class Three {
@@ -92,31 +90,83 @@ export default class Three {
       setModel: this.setModel.bind(this),
       model: this.model
     };
-    this.morphTargetParams = {};
     this.gui = new dat.GUI();
-    this.addGUI = this.addGUI.bind(this);
+    this.audios = this.loadAudios(20);
+    this.lipSyncData = this.loadLipSyncData();
+    this.morphTargetParams = {};
+    this.isMouseDown = false;
+
+    window.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    window.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    this.isHeadAtRest = true;
+  }
+
+  handleMouseDown() {
+    this.isMouseDown = true;
+    this.moveHead(true);
+    this.isHeadAtRest = false;
+    this.currentAudioIndex = Math.floor(Math.random() * 20);
+    this.playAudio(this.currentAudioIndex);
+  }
+
+  handleMouseUp() {
+    this.isMouseDown = false;
+    this.isHeadAtRest = false;
+    this.moveHead(false);
+    this.stopAudio(this.currentAudioIndex);
+  }
+  moveHead(isForward) {
+    if (this.model) {
+      const targetPosition = isForward ? -1.3 : -1.9;
+      this.model.position.z = T.MathUtils.lerp(
+        this.model.position.z,
+        targetPosition,
+        0.1
+      );
+    }
+  }
+
+  playAudio(index) {
+    if (this.audios[index]) {
+      this.audios[index].currentTime = 0;
+      this.audios[index].play();
+    }
+  }
+
+  stopAudio(index) {
+    if (this.audios[index]) {
+      this.audios[index].pause();
+      this.audios[index].currentTime = 0;
+    }
   }
 
   setStats() {
     this.stats = new Stats();
     document.body.append(this.stats.dom);
   }
-  addGUI(mesh) {
-    try {
-      for (const targetName of Object.keys(mesh.morphTargetDictionary)) {
-        this.gui
-          .add(this.morphTargetParams, targetName, 0, 1, 0.01)
-          .onChange((value) => {
-            const index = mesh.morphTargetDictionary[targetName];
-            mesh.morphTargetInfluences[index] = value;
-          });
+
+  async loadLipSyncData() {
+    const lipSyncData = [];
+    for (let index = 1; index <= 20; index++) {
+      try {
+        const data = await import(`../assets/audio/${index}.json`);
+        lipSyncData.push(data);
+      } catch (error) {
+        console.error(`Error loading lip sync data for ${index}:`, error);
       }
-      this.gui
-        .add({ playAudio: () => audio.play() }, 'playAudio')
-        .name('Play Audio');
-    } catch (error) {
-      console.error('Error adding GUI:', error);
     }
+    return lipSyncData;
+  }
+  loadAudios(numberAudios) {
+    const audios = [];
+
+    for (let index = 1; index <= numberAudios; index++) {
+      const audio = new Audio(`src/assets/audio/${index}.wav`);
+      audio.preload = 'auto';
+      audios.push(audio);
+    }
+
+    return audios;
   }
 
   setLights() {
@@ -157,7 +207,6 @@ export default class Three {
           for (const targetName of Object.keys(node.morphTargetDictionary)) {
             this.morphTargetParams[targetName] = 0;
           }
-          this.addGUI(node);
         }
       });
       this.model.scale.set(scale, scale, scale);
@@ -218,40 +267,63 @@ export default class Three {
       console.error('Error creating plane geometry:', error);
     }
   }
-  driveMorphTargets() {
-    const currentAudioTime = audio.currentTime;
-    for (let index = 0; index < lipSync.mouthCues.length; index++) {
-      if (this.model) {
-        this.model.traverse((node) => {
-          if (
-            node.morphTargetDictionary &&
-            node.morphTargetInfluences &&
-            node.name === 'polySurface1Shape'
-          ) {
-            const mouthCue = lipSync.mouthCues[index];
-            const viseme = mouthShapeToViseme[mouthCue.value];
+  async driveMorphTargets() {
+    if (!this.lipSyncData || this.lipSyncData.length === 0) {
+      console.warn('Lip sync data is not loaded yet!');
+      return;
+    }
+
+    const currentAudio = this.audios.find(
+      (audio) => audio.currentTime > 0 && !audio.paused
+    );
+
+    if (!currentAudio) {
+      console.warn('No audio is currently playing');
+      return;
+    }
+
+    const currentAudioTime = currentAudio.currentTime;
+    const lipSyncData = await this.lipSyncData;
+
+    const audioIndex = this.audios.indexOf(currentAudio);
+    const lipSync = lipSyncData[audioIndex];
+    if (lipSync && lipSync.mouthCues) {
+      for (let cueIndex = 0; cueIndex < lipSync.mouthCues.length; cueIndex++) {
+        if (this.model) {
+          this.model.traverse((node) => {
             if (
-              currentAudioTime >= mouthCue.start &&
-              currentAudioTime <= mouthCue.end
+              node.morphTargetDictionary &&
+              node.morphTargetInfluences &&
+              node.name === 'polySurface1Shape'
             ) {
-              const visemeIndex = node.morphTargetDictionary[viseme];
-              const currentInfluence = node.morphTargetInfluences[visemeIndex];
-              node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
-                currentInfluence,
-                1,
-                1
-              );
-            } else {
-              const visemeIndex = node.morphTargetDictionary[viseme];
-              const currentInfluence = node.morphTargetInfluences[visemeIndex];
-              node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
-                currentInfluence,
-                0,
-                0.1
-              );
+              const mouthCue = lipSync.mouthCues[cueIndex];
+              const viseme = mouthShapeToViseme[mouthCue.value];
+
+              if (
+                currentAudioTime >= mouthCue.start &&
+                currentAudioTime <= mouthCue.end
+              ) {
+                const visemeIndex = node.morphTargetDictionary[viseme];
+                const currentInfluence =
+                  node.morphTargetInfluences[visemeIndex];
+                node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
+                  currentInfluence,
+                  1,
+                  0.5
+                );
+              } else {
+                const visemeIndex = node.morphTargetDictionary[viseme];
+                const currentInfluence =
+                  node.morphTargetInfluences[visemeIndex];
+                node.morphTargetInfluences[visemeIndex] = T.MathUtils.lerp(
+                  currentInfluence,
+                  0,
+                  0.01
+                );
+              }
             }
-          }
-        });
+          });
+        }
       }
     }
   }
@@ -281,10 +353,10 @@ export default class Three {
     try {
       this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
-      // if (this.model) {
-      //   this.model.position.z = -1.4 + 0.5 * Math.sin(elapsedTime);
-      // }
       this.driveMorphTargets();
+      if (!this.isHeadAtRest) {
+        this.moveHead(this.isMouseDown);
+      }
 
       requestAnimationFrame(this.render.bind(this));
       this.renderer.setRenderTarget(this.FBOTarget);
