@@ -33,8 +33,9 @@ const MODEL_ROTATION = { x: -0.1, y: -1.5, z: 0 };
 const MODEL_COLOR_IF_NO_MATERIAL = 0x00_00_00;
 
 export default class Three {
-  constructor(canvas) {
+  constructor(canvas, audio) {
     this.canvas = canvas;
+    this.audio = audio;
 
     this.scene = new T.Scene();
 
@@ -106,12 +107,28 @@ export default class Three {
     });
     this.isHeadAtRest = true;
   }
+  fadeAudioVolume(from, to, duration = 3) {
+    const fadeSteps = 100;
+    let currentStep = 0;
+    const stepInterval = duration / fadeSteps;
+
+    const fadeInterval = setInterval(() => {
+      const newVolume = from + (to - from) * (currentStep / fadeSteps);
+      this.audio.volume = newVolume;
+
+      if (currentStep >= fadeSteps) {
+        clearInterval(fadeInterval);
+      }
+      currentStep++;
+    }, stepInterval);
+  }
 
   handleMouseDown() {
     this.isMouseDown = true;
     this.moveHead(true);
     this.isHeadAtRest = false;
     this.currentAudioIndex = Math.floor(Math.random() * 20);
+    this.fadeAudioVolume(0.5, 0.1);
     this.playAudio(this.currentAudioIndex);
   }
 
@@ -120,6 +137,7 @@ export default class Three {
     this.isHeadAtRest = false;
     this.moveHead(false);
     this.stopAudio(this.currentAudioIndex);
+    this.fadeAudioVolume(0.1, 0.5);
   }
 
   handleTouchStart(event) {

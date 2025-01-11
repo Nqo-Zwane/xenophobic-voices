@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.querySelector('#canvas');
   const acceptButton = document.querySelector('#accept-button');
 
+  const audio = new Audio('src/assets/audio/dark-impulse-ambient-part-2.wav');
+  audio.loop = true;
+  audio.volume = 0.5;
+  audio.play();
+
   enterButton.addEventListener('click', (event) => {
     event.preventDefault();
 
@@ -47,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration: 1,
         onComplete: () => {
           if (canvas) {
-            new Three(canvas);
+            new Three(canvas, audio);
           }
           gsap.fromTo(
             canvas,
