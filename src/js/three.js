@@ -1,4 +1,4 @@
-import * as dat from 'dat.gui';
+//import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import * as T from 'three';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
@@ -68,7 +68,7 @@ export default class Three {
 
     this.FBOTarget = this.getFBO();
 
-    this.setStats();
+    //this.setStats();
 
     this.setModel();
 
@@ -348,7 +348,7 @@ export default class Three {
 
   render() {
     try {
-      this.stats.update();
+      //this.stats.update();
       const elapsedTime = this.clock.getElapsedTime();
       this.driveMorphTargets();
       if (!this.isHeadAtRest) {

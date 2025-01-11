@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   new Three(canvas);
                 }
                 const cursor = document.querySelector('.cursor');
-                const cursorText = cursor.querySelector('.cursor-text');
                 const updateCursor = (event) => {
                   const { clientX: x, clientY: y } = event;
                   cursor.style.transform = `translate(${x}px, ${y}px)`;
