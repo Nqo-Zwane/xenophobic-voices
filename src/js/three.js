@@ -95,8 +95,15 @@ export default class Three {
 
     window.addEventListener('mousedown', this.handleMouseDown.bind(this));
     window.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    window.addEventListener('touchstart', this.handleTouchStart.bind(this));
-    window.addEventListener('touchend', this.handleTouchEnd.bind(this));
+    window.addEventListener('touchstart', this.handleTouchStart.bind(this), {
+      passive: false
+    });
+    window.addEventListener('touchmove', this.handleTouchMove.bind(this), {
+      passive: false
+    });
+    window.addEventListener('touchend', this.handleTouchEnd.bind(this), {
+      passive: false
+    });
     this.isHeadAtRest = true;
   }
 
@@ -115,11 +122,16 @@ export default class Three {
     this.stopAudio(this.currentAudioIndex);
   }
 
-  handleTouchStart() {
+  handleTouchStart(event) {
+    event.preventDefault();
     this.handleMouseDown();
   }
+  handleTouchMove(event) {
+    event.preventDefault();
+  }
 
-  handleTouchEnd() {
+  handleTouchEnd(event) {
+    event.preventDefault();
     this.handleMouseUp();
   }
   moveHead(isForward) {

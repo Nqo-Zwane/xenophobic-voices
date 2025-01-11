@@ -19,6 +19,10 @@ html,
 body {
   width: 100%;
   height: 100%;
+  -webkit-user-select: none;  /* For Safari */
+  -moz-user-select: none;     /* For Firefox */
+  -ms-user-select: none;      /* For Internet Explorer/Edge */
+  user-select: none;          /* Standard syntax */
 }
 #warning-overlay {
   position: fixed;
