@@ -22,13 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0,
         duration: 1,
         onComplete: () => {
-          introOverlay.style.display = 'none';
-
           warningOverlay.classList.add('visible');
           gsap.fromTo(
             warningOverlay,
             { opacity: 0 },
-            { opacity: 1, duration: 1 }
+            {
+              opacity: 1,
+              duration: 1,
+              onComplete: () => {
+                introOverlay.style.display = 'none';
+              }
+            }
           );
         }
       }
@@ -42,7 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0,
         duration: 1,
         onComplete: () => {
-          warningOverlay.style.display = 'none';
+          if (canvas) {
+            new Three(canvas);
+          }
           gsap.fromTo(
             canvas,
             { opacity: 0 },
@@ -50,9 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
               opacity: 1,
               duration: 1,
               onComplete: () => {
-                if (canvas) {
-                  new Three(canvas);
-                }
+                warningOverlay.style.display = 'none';
                 const cursor = document.querySelector('.cursor');
                 const updateCursor = (event) => {
                   const { clientX: x, clientY: y } = event;
