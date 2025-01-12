@@ -70,6 +70,25 @@ document.addEventListener('DOMContentLoaded', () => {
                   '.cursor-text-inactive'
                 );
                 const cursorTextActive = document.querySelector('.cursor-text');
+                canvas.addEventListener('touchmove', (event) => {
+                  const touch = event.touches[0];
+                  cursor.style.transform = `translate(${touch.clientX}px, ${touch.clientY}px)`;
+                });
+                canvas.addEventListener('touchstart', (event) => {
+                  const touch = event.touches[0];
+                  cursor.style.transform = `translate(${touch.clientX}px, ${touch.clientY}px)`;
+                  cursor.classList.remove('hide');
+                  cursor.classList.add('active');
+                  cursorTextInactive.style.display = 'none';
+                  cursorTextActive.style.display = 'block';
+                });
+
+                canvas.addEventListener('touchend', () => {
+                  cursor.classList.remove('active');
+                  cursorTextInactive.style.display = 'block';
+                  cursorTextActive.style.display = 'none';
+                  cursor.classList.remove('hide');
+                });
 
                 const updateCursor = (event) => {
                   const { clientX: x, clientY: y } = event;
@@ -85,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   cursorTextInactive.style.display = 'block';
                   cursorTextActive.style.display = 'none';
                 };
-                window.addEventListener('mousemove', (event) => {
+                window.addEventListener('pointermove', (event) => {
                   if (event.target === canvas) {
                     cursor.classList.remove('hide');
                     updateCursor(event);
@@ -94,13 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                 });
 
-                canvas.addEventListener('mousedown', handleMouseDown);
-                canvas.addEventListener('mouseup', handleMouseUp);
+                canvas.addEventListener('pointerdown', handleMouseDown);
+                canvas.addEventListener('pointerup', handleMouseUp);
 
-                canvas.addEventListener('mouseleave', () =>
+                canvas.addEventListener('pointerleave', () =>
                   cursor.classList.add('hide')
                 );
-                canvas.addEventListener('mouseenter', () =>
+                canvas.addEventListener('pointerenter', () =>
                   cursor.classList.remove('hide')
                 );
               }
