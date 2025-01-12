@@ -19,6 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
   audio.volume = 0.5;
   audio.play();
 
+  enterButton.addEventListener(
+    'pointerdown',
+    (event) => {
+      if (event.pointerType === 'touch' || event.pointerType === 'pen') {
+        audio.play();
+      }
+    },
+    { once: true }
+  );
   enterButton.addEventListener('click', (event) => {
     event.preventDefault();
 
