@@ -63,15 +63,24 @@ document.addEventListener('DOMContentLoaded', () => {
               onComplete: () => {
                 warningOverlay.style.display = 'none';
                 const cursor = document.querySelector('.cursor');
+                const cursorTextInactive = document.querySelector(
+                  '.cursor-text-inactive'
+                );
+                const cursorTextActive = document.querySelector('.cursor-text');
+
                 const updateCursor = (event) => {
                   const { clientX: x, clientY: y } = event;
                   cursor.style.transform = `translate(${x}px, ${y}px)`;
                 };
                 const handleMouseDown = () => {
                   cursor.classList.add('active');
+                  cursorTextInactive.style.display = 'none';
+                  cursorTextActive.style.display = 'block';
                 };
                 const handleMouseUp = () => {
                   cursor.classList.remove('active');
+                  cursorTextInactive.style.display = 'block';
+                  cursorTextActive.style.display = 'none';
                 };
                 window.addEventListener('mousemove', (event) => {
                   if (event.target === canvas) {
