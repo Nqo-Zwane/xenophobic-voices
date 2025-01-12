@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const warningOverlay = document.querySelector('#warning-overlay');
   const canvas = document.querySelector('#canvas');
   const acceptButton = document.querySelector('#accept-button');
+  const cursor = document.querySelector('.cursor');
+  cursor.classList.add('hide');
 
   const audio = new Audio('src/assets/audio/dark-impulse-ambient-part-2.wav');
   audio.loop = true;
@@ -63,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
               onComplete: () => {
                 warningOverlay.style.display = 'none';
                 const cursor = document.querySelector('.cursor');
+                cursor.classList.remove('hide');
                 const cursorTextInactive = document.querySelector(
                   '.cursor-text-inactive'
                 );
